@@ -29,7 +29,8 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
                       '/create_game' : self.create_game,
                       '/join_game' : self.join_game,
                       '/game_state' : self.game_state,
-                      '/make_move' : self.make_move}
+                      '/make_move' : self.make_move,
+                      '/match' : self.match}
         self.matches = list()
 
     def index_page(self):
@@ -50,6 +51,9 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def make_move(self):
         """Change the state of a specific match."""
+
+    def match(self):
+        """Send the match page as a response."""
 
     def do_GET(self):
         """Handle a GET request."""
