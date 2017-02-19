@@ -35,6 +35,8 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def index_page(self):
         """Send the index page as a response."""
+        with open('index.html', 'r') as index_page:
+            self.wfile.write(index_page.read().encode())
 
     def create_game(self):
         """Create a new match and send a response with the match id."""
