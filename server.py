@@ -22,16 +22,7 @@ class GameMatch:
 class GameHandler(http.server.BaseHTTPRequestHandler):
     """Handle requests and the game state."""
 
-    def __init__(self, request, client_address, server):
-        """Set instance variables."""
-        super(GameHandler, self).__init__(request, client_address, server)
-        self.paths = {'/' : self.index_page,
-                      '/create_game' : self.create_game,
-                      '/join_game' : self.join_game,
-                      '/game_state' : self.game_state,
-                      '/make_move' : self.make_move,
-                      '/match' : self.match}
-        self.matches = dict()
+    matches = dict()
 
     def index_page(self):
         """Send the index page as a response."""
@@ -59,10 +50,16 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handle a GET request."""
+        paths = {'/' : self.index_page,
+                 '/create_game' : self.create_game,
+                 '/join_game' : self.join_game,
+                 '/game_state' : self.game_state,
+                 '/make_move' : self.make_move,
+                 '/match' : self.match}
         self.send_response(200)
         self.end_headers()
-        if self.path in self.paths:
-            self.paths[self.path]()
+        if self.path in paths:
+            paths[self.path]()
 
 
 def run_server():
