@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>GAME</title>
+        <meta charset="UTF-8">
+        <style>
+            form {width: 25%; margin: auto; padding-top: 15%;}
+            button {width: 10%; margin: auto; padding-top: 15%;}
+        </style>
+        <script>
+            createGame = function() {
+                req = new XMLHttpRequest();
+                req.open('localhost:8080/create_game');
+                req.onReadyStateChange = function() {
+                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+                        // Do something.
+                    }
+                }
+                req.send(null);
+            }
+            joinGame = function() {
+                name = document.forms['join_game']['game_name'];
+                req = new XMLHttpRequest();
+                req.open('localhost:8080/join_game?name=' + name);
+                req.onReadyStateChange = function() {
+                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+                        // Do something.
+                    }
+                }
+                req.send(null);
+            }
+        </script>
+    </head>
+    <body>
+        <button type="button" onclick="createGame">Create Game</button>
+        <form onsubmit="return joinGame()" name="join_game">
+            <label for="game_name">Join game</label>
+            <input type="text" id="game_name" name="game_name">
+            <input type="submit">
+        </form>
+    </body>
+</html>
