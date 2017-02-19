@@ -70,3 +70,6 @@ def run_server():
     http_server = http.server.HTTPServer(('127.0.0.1', 8080), GameHandler)
     while True:
         http_server.handle_request()
+
+if __name__ == '__main__':
+    run_server()
