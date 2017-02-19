@@ -22,9 +22,9 @@ class GameMatch:
 class GameHandler(http.server.BaseHTTPRequestHandler):
     """Handle requests and the game state."""
 
-    def __init__(self):
+    def __init__(self, request, client_address, server):
         """Set instance variables."""
-        super(GameHandler, self).__init__()
+        super(GameHandler, self).__init__(request, client_address, server)
         self.paths = {'/' : self.index_page,
                       '/create_game' : self.create_game,
                       '/join_game' : self.join_game,
