@@ -31,7 +31,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
                       '/game_state' : self.game_state,
                       '/make_move' : self.make_move,
                       '/match' : self.match}
-        self.matches = list()
+        self.matches = dict()
 
     def index_page(self):
         """Send the index page as a response."""
