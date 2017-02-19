@@ -10,7 +10,7 @@
         <script>
             createGame = function() {
                 req = new XMLHttpRequest();
-                req.open('localhost:8080/create_game');
+                req.open('GET', 'localhost:8080/create_game');
                 req.onReadyStateChange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         // Do something.
@@ -21,7 +21,7 @@
             joinGame = function() {
                 name = document.forms['join_game']['game_name'];
                 req = new XMLHttpRequest();
-                req.open('localhost:8080/join_game?name=' + name);
+                req.open('GET', 'localhost:8080/join_game?name=' + name);
                 req.onReadyStateChange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         // Do something.
