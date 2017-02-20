@@ -4,6 +4,7 @@ import random
 
 import http.server
 import http.cookies
+import urllib.parse
 
 
 class GameMatch:
@@ -55,27 +56,36 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
         Send a response that tells if it was succesful or not.
         """
+        self.end_headers()
 
     def game_state(self):
         """Send the state of a specific match as a response."""
+        self.end_headers()
 
     def make_move(self):
         """Change the state of a specific match."""
+        self.end_headers()
 
     def match(self):
         """Send the match page as a response."""
+        self.end_headers()
 
     def do_GET(self):
         """Handle a GET request."""
+        print(self.path)
+        url = ':'.join(str(i) for i in self.server.server_address) + self.path
+        parsed = urllib.parse.urlparse(url)
+        path = self.path.replace(parsed.query, '')
+        path = path.replace('?', '')
         paths = {'/' : self.index_page,
                  '/create_game' : self.create_game,
                  '/join_game' : self.join_game,
                  '/game_state' : self.game_state,
                  '/make_move' : self.make_move,
                  '/match' : self.match}
-        if self.path in paths:
+        if path in paths:
             self.send_response(200)
-            paths[self.path]()
+            paths[path]()
         else:
             self.send_response(301)
             self.send_header('Location', '/')
