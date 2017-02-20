@@ -19,7 +19,7 @@
                 req.send(null);
             }
             joinGame = function() {
-                name = document.forms['join_game']['game_name'];
+                name = document.forms['join_game']['game_name'].value;
                 req = new XMLHttpRequest();
                 req.open('GET', '/join_game?name=' + name);
                 req.onReadyStateChange = function() {
