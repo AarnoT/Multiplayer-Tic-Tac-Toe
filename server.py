@@ -76,6 +76,10 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         if self.path in paths:
             self.send_response(200)
             paths[self.path]()
+        else:
+            self.send_response(301)
+            self.send_header('Location', '/')
+            self.end_headers()
 
 
 def run_server():
