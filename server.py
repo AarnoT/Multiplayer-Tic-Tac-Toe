@@ -1,6 +1,9 @@
 """Tic-tac-toe game server."""
 
+import random
+
 import http.server
+import http.cookies
 
 
 class GameMatch:
@@ -23,14 +26,28 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
     """Handle requests and the game state."""
 
     matches = dict()
+    player_ids = set()
 
     def index_page(self):
         """Send the index page as a response."""
+        self.end_headers()
         with open('index.html', 'r') as index_page:
             self.wfile.write(index_page.read().encode())
 
+    def set_player_id(self):
+        """Set the player_id cookie if it's not already set."""
+        cookie = http.cookies.SimpleCookie(self.headers.get('Cookie', ""))
+        if 'player_id' not in cookie:
+            player_id = random.randint(1, 10000000)
+            while player_id in GameHandler.player_ids:
+                player_id = random.randint(1, 10000000)
+            self.send_header('Set-Cookie', 'player_id={}'.format(player_id))
+            GameHandler.player_ids.add(player_id)
+
     def create_game(self):
-        """Create a new match and send a response with the match id."""
+        """Create a new match and set the player_id."""
+        self.set_player_id()
+        self.end_headers()
 
     def join_game(self):
         """
@@ -56,9 +73,8 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
                  '/game_state' : self.game_state,
                  '/make_move' : self.make_move,
                  '/match' : self.match}
-        self.send_response(200)
-        self.end_headers()
         if self.path in paths:
+            self.send_response(200)
             paths[self.path]()
 
 
