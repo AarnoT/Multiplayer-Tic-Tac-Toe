@@ -10,7 +10,7 @@
                 req = new XMLHttpRequest();
                 req.responseType = 'json';
                 req.open('GET', '/game_state?id=' + match_id);
-                req.onReadyStateChange = function() {
+                req.onreadystatechange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         var state = req.response;
                         draw_grid(state.board.length);
