@@ -92,7 +92,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             with open('game.html', 'r') as game_page:
-                self.wfile.write(game_page.encode())
+                self.wfile.write(game_page.read().encode())
         else:
             self.send_response(303)
             self.send_header('Location', '/')
