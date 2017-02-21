@@ -68,7 +68,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         if match_id in GameHandler.matches:
             self.send_response(200)
             self.end_headers()
-            json.dump({'board' : GameHandler.matches[match_id].board}, self.wfile)
+            self.wfile.write(json.dumps({'board' : GameHandler.matches[match_id].board}).encode())
         else:
             self.send_response(303)
             self.send_header('Location', '/')
