@@ -90,11 +90,13 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             if player_id != GameHandler.matches[match_id].player_1:
                 GameHandler.matches[match_id].player_2 = player_id
             self.send_response(200)
+            self.end_headers()
+            with open('game.html', 'r') as game_page:
+                self.wfile.write(game_page.encode())
         else:
             self.send_response(303)
             self.send_header('Location', '/')
-        self.end_headers()
-        self.wfile.write(str(match_id).encode())
+            self.end_headers()
 
     def get_query(self):
         """Return the query as a string if the current url has one."""
