@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>GAME</title>
+        <meta charset="UTF-8">
+        <script>
+            function draw() {
+                var canvas = document.getElementById('game_canvas');
+                var context = canvas.getContext('2d');
+            }
+        </script>
+        <style>
+            canvas {border: 1px solid black}
+        </style>
+    </head>
+    <body onload="draw();">
+        <canvas id="game_canvas" width="700" height="700">
+            If you see this your browser doesn't support the canvas element.
+        </canvas>
+    </body>
+</html>
