@@ -10,8 +10,9 @@ import urllib.parse
 class GameMatch:
     """Store the state of a single game match."""
 
-    def __init__(self, player_1, board_size=3):
+    def __init__(self, match_id, player_1, board_size=3):
         """Set instance variables."""
+        self.match_id = match_id
         self.player_1 = player_1
         self.player_2 = None
         self.board = ['*' * board_size]  * board_size
@@ -31,6 +32,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def index_page(self):
         """Send the index page as a response."""
+        self.send_response(200)
         self.end_headers()
         with open('index.html', 'r') as index_page:
             self.wfile.write(index_page.read().encode())
@@ -44,47 +46,61 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
                 player_id = random.randint(1, 10000000)
             self.send_header('Set-Cookie', 'player_id={}'.format(player_id))
             GameHandler.player_ids.add(player_id)
+        return cookie['player_id'] or player_id
 
     def create_game(self):
         """Create a new match and set the player_id."""
-        self.set_player_id()
+        self.send_response(303)
+        player_id = self.set_player_id()
+        match_id = random.randint(1, 10000000)
+        while match_id in GameHandler.matches:
+            match_id = random.randint(1, 10000000)
+        GameHandler.matches[match_id] = GameMatch(match_id, player_id)
+        self.send_header('Location', '/match?id={}'.format(match_id))
         self.end_headers()
-
-    def join_game(self):
-        """
-        Add a player to an existing match if there is a free slot.
-
-        Send a response that tells if it was succesful or not.
-        """
-        self.end_headers()
+        self.wfile.write(str(match_id).encode())
 
     def game_state(self):
         """Send the state of a specific match as a response."""
+        self.send_response(200)
         self.end_headers()
 
     def make_move(self):
         """Change the state of a specific match."""
+        self.send_response(200)
         self.end_headers()
 
     def match(self):
         """Send the match page as a response."""
+        query = self.get_query()
+        query_dict = urllib.parse.parse_qs(query)
+        match_id = int(query_dict.get('id', [-1])[0])
+        if match_id in GameHandler.matches and (
+                not GameHandler.matches[match_id].player_2):
+            player_id = self.set_player_id()
+            GameHandler.matches[match_id].player_2 = player_id
+            self.send_response(200)
+        else:
+            self.send_response(303)
+            self.send_header('Location', '/')
         self.end_headers()
+        self.wfile.write(str(match_id).encode())
+
+    def get_query(self):
+        """Return the query as a string if the current url has one."""
+        url = ':'.join(str(i) for i in self.server.server_address) + self.path
+        return urllib.parse.urlparse(url).query
 
     def do_GET(self):
         """Handle a GET request."""
-        print(self.path)
-        url = ':'.join(str(i) for i in self.server.server_address) + self.path
-        parsed = urllib.parse.urlparse(url)
-        path = self.path.replace(parsed.query, '')
+        path = self.path.replace(self.get_query(), '')
         path = path.replace('?', '')
         paths = {'/' : self.index_page,
                  '/create_game' : self.create_game,
-                 '/join_game' : self.join_game,
                  '/game_state' : self.game_state,
                  '/make_move' : self.make_move,
                  '/match' : self.match}
         if path in paths:
-            self.send_response(200)
             paths[path]()
         else:
             self.send_response(301)
