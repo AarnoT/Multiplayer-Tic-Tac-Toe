@@ -26,8 +26,8 @@
                     context.lineTo(x, canvas.height);
                 }
                 for (y = canvas.height / size; y < canvas.height; y += canvas.height / size) {
-                    context.moveTo(y, 0);
-                    context.lineTo(y, canvas.width);
+                    context.moveTo(0, y);
+                    context.lineTo(canvas.width, y);
                 }
                 context.stroke();
             }
