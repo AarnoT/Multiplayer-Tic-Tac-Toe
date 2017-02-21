@@ -8,11 +8,11 @@
             button {width: 10%; margin-left: 45%; margin-top: 15%;}
         </style>
         <script>
-            createGame = function() {
+            function createGame() {
                 window.location.assign('/create_game');
             }
-            joinGame = function() {
-                name = document.forms['join_game']['game_name'].value;
+            function joinGame() {
+                var name = document.forms['join_game']['game_name'].value;
                 window.location.assign('/match?id=' + name);
                 return false;
             }
