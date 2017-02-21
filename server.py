@@ -1,10 +1,10 @@
 """Tic-tac-toe game server."""
 
 import random
-
 import http.server
 import http.cookies
 import urllib.parse
+import json
 
 
 class GameMatch:
@@ -62,8 +62,17 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def game_state(self):
         """Send the state of a specific match as a response."""
-        self.send_response(200)
-        self.end_headers()
+        query = self.get_query()
+        query_dict = urllib.parse.parse_qs(query)
+        match_id = int(query_dict.get('id', [-1])[0])
+        if match_id in GameHandler.matches:
+            self.send_response(200)
+            self.end_headers()
+            json.dump(GameHandler.matches[match_id].board, self.wfile)
+        else:
+            self.send_response(303)
+            self.send_header('Location', '/')
+            self.end_headers()
 
     def make_move(self):
         """Change the state of a specific match."""
