@@ -6,11 +6,13 @@
         <script>
             function updateState() {
                 req = new XMLHttpRequest();
-                req.open('GET', '/game_state');
+                regex = new RegExp('\\?id=(\\d+)');
+                match_id = regex.exec(window.location.href)[1];
+                req.open('GET', '/game_state?id=' + match_id);
                 req.onReadyStateChange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         var state = req.response;
-                        draw_grid(state.board);
+                        draw_grid(state.board.length);
                     }
                 }
                 req.send(null);
