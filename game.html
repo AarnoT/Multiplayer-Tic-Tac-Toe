@@ -10,9 +10,10 @@
                 req.onReadyStateChange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         var state = req.response;
-                        draw_grid(state.board_size);
+                        draw_grid(state.board);
                     }
                 }
+                req.send(null);
             }
             function draw_grid(size) {
                 var canvas = document.getElementById('game_canvas');
