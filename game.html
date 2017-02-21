@@ -5,9 +5,10 @@
         <meta charset="UTF-8">
         <script>
             function updateState() {
-                req = new XMLHttpRequest();
                 regex = new RegExp('\\?id=(\\d+)');
                 match_id = regex.exec(window.location.href)[1];
+                req = new XMLHttpRequest();
+                req.responseType = 'json';
                 req.open('GET', '/game_state?id=' + match_id);
                 req.onReadyStateChange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
