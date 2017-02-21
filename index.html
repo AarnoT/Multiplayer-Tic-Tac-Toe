@@ -9,25 +9,11 @@
         </style>
         <script>
             createGame = function() {
-                req = new XMLHttpRequest();
-                req.open('GET', '/create_game');
-                req.onReadyStateChange = function() {
-                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                        // Do something.
-                    }
-                }
-                req.send(null);
+                window.location.assign('/create_game');
             }
             joinGame = function() {
                 name = document.forms['join_game']['game_name'].value;
-                req = new XMLHttpRequest();
-                req.open('GET', '/join_game?name=' + name);
-                req.onReadyStateChange = function() {
-                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                        // Do something.
-                    }
-                }
-                req.send(null);
+                window.location.assign('/match?id=' + name);
                 return false;
             }
         </script>
