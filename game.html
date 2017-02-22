@@ -6,9 +6,9 @@
         <script>
             var state;
             function updateState() {
-                regex = new RegExp('\\?id=(\\d+)');
-                match_id = regex.exec(window.location.href)[1];
-                req = new XMLHttpRequest();
+                var regex = new RegExp('\\?id=(\\d+)');
+                var match_id = regex.exec(window.location.href)[1];
+                var req = new XMLHttpRequest();
                 req.responseType = 'json';
                 req.open('GET', '/game_state?id=' + match_id);
                 req.onreadystatechange = function() {
