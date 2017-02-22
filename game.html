@@ -4,6 +4,7 @@
         <title>GAME</title>
         <meta charset="UTF-8">
         <script>
+            var state;
             function updateState() {
                 regex = new RegExp('\\?id=(\\d+)');
                 match_id = regex.exec(window.location.href)[1];
@@ -12,15 +13,14 @@
                 req.open('GET', '/game_state?id=' + match_id);
                 req.onreadystatechange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                        var state = req.response;
+                        state = req.response;
                         draw_grid(state.board.length);
-                        draw_x(1, 1, state.board.length);
-                        draw_o(2, 1, state.board.length);
                     }
                 }
                 req.send(null);
             }
-            function draw_grid(size) {
+            function draw_grid() {
+                var size = state.board.length;
                 var canvas = document.getElementById('game_canvas');
                 var context = canvas.getContext('2d');
                 context.beginPath();
@@ -35,27 +35,36 @@
                 context.stroke();
                 context.closePath();
             }
-            function draw_x(x_pos, y_pos, size) {
+            function draw_x(tile_x, tile_y) {
+                var size = state.board.length;
                 var canvas = document.getElementById('game_canvas');
                 var context = canvas.getContext('2d');
                 var tile_size = canvas.width / size;
                 context.beginPath();
-                context.moveTo(tile_size * (x_pos + 0.1), tile_size * (y_pos + 0.1));
-                context.lineTo(tile_size * (x_pos + 0.9), tile_size * (y_pos + 0.9));
-                context.moveTo(tile_size * (x_pos + 0.1), tile_size * (y_pos + 0.9));
-                context.lineTo(tile_size * (x_pos + 0.9), tile_size * (y_pos + 0.1));
+                context.moveTo(tile_size * (tile_x + 0.1), tile_size * (tile_y + 0.1));
+                context.lineTo(tile_size * (tile_x + 0.9), tile_size * (tile_y + 0.9));
+                context.moveTo(tile_size * (tile_x + 0.1), tile_size * (tile_y + 0.9));
+                context.lineTo(tile_size * (tile_x + 0.9), tile_size * (tile_y + 0.1));
                 context.stroke();
                 context.closePath();
             }
-            function draw_o(x_pos, y_pos, size) {
+            function draw_o(tile_x, tile_y) {
+                var size = state.board.length;
                 var canvas = document.getElementById('game_canvas');
                 var context = canvas.getContext('2d');
                 var tile_size = canvas.width / size;
                 context.beginPath();
-                context.arc(tile_size * (x_pos + 0.5), tile_size * (y_pos + 0.5),
+                context.arc(tile_size * (tile_x + 0.5), tile_size * (tile_y + 0.5),
                             tile_size * 0.4, 0, 2 * Math.PI, false);
                 context.stroke();
                 context.closePath();
+            }
+            function handleClick(event) {
+                var size = state.board.length;
+                var canvas = document.getElementById('game_canvas');
+                var tile_x = Math.min(Math.floor((event.pageX - canvas.offsetLeft) / (canvas.width/size)), 2);
+                var tile_y = Math.min(Math.floor((event.pageY - canvas.offsetTop) / (canvas.width/size)), 2);
+                draw_x(tile_x, tile_y);
             }
         </script>
         <style>
@@ -63,7 +72,7 @@
         </style>
     </head>
     <body onload="updateState();">
-        <canvas id="game_canvas" width="700" height="700">
+        <canvas id="game_canvas" width="700" height="700" onclick="handleClick(event);">
             If you see this your browser doesn't support the canvas element.
         </canvas>
     </body>
