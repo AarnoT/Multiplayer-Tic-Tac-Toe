@@ -6,9 +6,14 @@
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
         <script type="text/javascript">
             var state;
-            function updateState() {
+            var match_id;
+            function getMatchID() {
                 var regex = new RegExp('\\?id=(\\d+)');
                 var match_id = regex.exec(window.location.href)[1];
+                document.getElementById('header').innerHTML = 'Game ID: ' + match_id;
+            }
+            getMatchID();
+            function updateState() {
                 var req = new XMLHttpRequest();
                 req.responseType = 'json';
                 req.open('GET', '/game_state?id=' + match_id);
@@ -73,6 +78,7 @@
         </style>
     </head>
     <body onload="updateState();">
+        <h1 id="header"></h1>
         <canvas id="game_canvas" width="700" height="700" onclick="handleClick(event);">
             If you see this your browser doesn't support the canvas element.
         </canvas>
