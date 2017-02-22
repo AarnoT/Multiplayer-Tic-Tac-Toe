@@ -9,7 +9,7 @@
             var match_id;
             function getMatchID() {
                 var regex = new RegExp('\\?id=(\\d+)');
-                var match_id = regex.exec(window.location.href)[1];
+                match_id = regex.exec(window.location.href)[1];
                 document.getElementById('header').innerHTML = 'Game ID: ' + match_id;
             }
             getMatchID();
