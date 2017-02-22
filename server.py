@@ -39,8 +39,11 @@ class GameMatch:
             return 'x'
         return False
 
-    def check_valid_move(self, move):
-        """Check if a move is valid."""
+    def check_valid_move(self, x_tile, y_tile):
+        """Check if a move is valid. (0, 0) is the top left corner."""
+        move_is_on_board = 0 < x_tile < len(self.board) and 0 < y_tile < len(self.board)
+        spot_is_free = self.board[y_tile][x_tile] == '*'
+        return move_is_on_board and spot_is_free
 
 
 class GameHandler(http.server.BaseHTTPRequestHandler):
