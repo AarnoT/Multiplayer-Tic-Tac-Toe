@@ -19,6 +19,25 @@ class GameMatch:
 
     def check_game_over(self):
         """Check if the match has ended."""
+        for y in range(len(self.board)):
+            if all(self.board[x][y] == 'o' for x in range(len(self.board))):
+                return 'o'
+            if all(self.board[x][y] == 'x' for x in range(len(self.board))):
+                return 'x'
+        for x in range(len(self.board)):
+            if all(self.board[x][y] == 'o' for y in range(len(self.board))):
+                return 'o'
+            if all(self.board[x][y] == 'x' for y in range(len(self.board))):
+                return 'x'
+        if all(self.board[n][n] == 'o' for n in range(len(self.board))):
+            return 'o'
+        if all(self.board[n][n] == 'x' for n in range(len(self.board))):
+            return 'x'
+        if all(self.board[n][len(self.board) - n - 1] == 'o' for n in range(len(self.board))):
+            return 'o'
+        if all(self.board[n][len(self.board) - n - 1] == 'x' for n in range(len(self.board))):
+            return 'x'
+        return False
 
     def check_valid_move(self, move):
         """Check if a move is valid."""
