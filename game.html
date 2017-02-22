@@ -15,7 +15,7 @@
                 req.onreadystatechange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         state = req.response;
-                        draw_grid(state.board.length);
+                        draw_grid();
                     }
                 }
                 req.send(null);
