@@ -12,8 +12,8 @@
                 match_id = regex.exec(window.location.href)[1];
                 document.getElementById('header').innerHTML = 'Game ID: ' + match_id;
             }
-            getMatchID();
             function updateState() {
+                getMatchID();
                 var req = new XMLHttpRequest();
                 req.responseType = 'json';
                 req.open('GET', '/game_state?id=' + match_id);
