@@ -62,13 +62,14 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
     def set_player_id(self):
         """Set the player_id cookie if it's not already set."""
         cookie = http.cookies.SimpleCookie(self.headers.get('Cookie', ""))
+        player_id = None
         if 'player_id' not in cookie:
             player_id = random.randint(1, 10000000)
             while player_id in GameHandler.player_ids:
                 player_id = random.randint(1, 10000000)
             self.send_header('Set-Cookie', 'player_id={}'.format(player_id))
             GameHandler.player_ids.add(player_id)
-        return int(cookie['player_id'].value) or player_id
+        return player_id or int(cookie['player_id'].value)
 
     def create_game(self):
         """Create a new match and set the player_id."""
