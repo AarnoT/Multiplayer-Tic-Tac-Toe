@@ -15,6 +15,7 @@
                         var state = req.response;
                         draw_grid(state.board.length);
                         draw_x(1, 1, state.board.length);
+                        draw_o(2, 1, state.board.length);
                     }
                 }
                 req.send(null);
@@ -38,10 +39,21 @@
                 var canvas = document.getElementById('game_canvas');
                 var context = canvas.getContext('2d');
                 var tile_size = canvas.width / size;
+                context.beginPath();
                 context.moveTo(tile_size * (x_pos + 0.1), tile_size * (y_pos + 0.1));
                 context.lineTo(tile_size * (x_pos + 0.9), tile_size * (y_pos + 0.9));
                 context.moveTo(tile_size * (x_pos + 0.1), tile_size * (y_pos + 0.9));
                 context.lineTo(tile_size * (x_pos + 0.9), tile_size * (y_pos + 0.1));
+                context.stroke();
+                context.closePath();
+            }
+            function draw_o(x_pos, y_pos, size) {
+                var canvas = document.getElementById('game_canvas');
+                var context = canvas.getContext('2d');
+                var tile_size = canvas.width / size;
+                context.beginPath();
+                context.arc(tile_size * (x_pos + 0.5), tile_size * (y_pos + 0.5),
+                            tile_size * 0.4, 0, 2 * Math.PI, false);
                 context.stroke();
                 context.closePath();
             }
