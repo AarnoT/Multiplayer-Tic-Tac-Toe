@@ -93,7 +93,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             match = GameHandler.matches[match_id]
             self.send_response(200)
             self.end_headers()
-            player_id = set_player_id()
+            player_id = self.set_player_id()
             player_num = 1 if player_id == match.player_1 else 2
             self.wfile.write(json.dumps({'board' : match.board,
                                          'state' : match.state,
