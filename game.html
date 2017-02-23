@@ -20,6 +20,7 @@
                 req.onreadystatechange = function() {
                     if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
                         state = req.response;
+                        document.getElementById('game_state').innerHTML = state.state;
                         draw_grid();
                     }
                 }
@@ -78,7 +79,8 @@
         </style>
     </head>
     <body onload="updateState();">
-        <h1 id="header"></h1>
+        <h1 id="header"></h1><br>
+        <h2 id="game_state"></h2>
         <canvas id="game_canvas" width="700" height="700" onclick="handleClick(event);">
             If you see this your browser doesn't support the canvas element.
         </canvas>
