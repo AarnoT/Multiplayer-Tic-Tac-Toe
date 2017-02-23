@@ -71,7 +71,16 @@
                 var canvas = document.getElementById('game_canvas');
                 var tile_x = Math.min(Math.floor((event.pageX - canvas.offsetLeft) / (canvas.width/size)), 2);
                 var tile_y = Math.min(Math.floor((event.pageY - canvas.offsetTop) / (canvas.width/size)), 2);
-                draw_x(tile_x, tile_y);
+                var req = new XMLHttpRequest();
+                req.open('GET', '/make_move?x=' + tile_x + '&y=' + tile_y);
+                req.onreadystatechange = function() {
+                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+                        if (req.response === 'success') {
+                            updateState();
+                        }
+                    }
+                }
+                req.send(null);
             }
         </script>
         <style>
