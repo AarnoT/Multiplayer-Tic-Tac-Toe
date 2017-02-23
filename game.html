@@ -81,16 +81,19 @@
                 var canvas = document.getElementById('game_canvas');
                 var tile_x = Math.min(Math.floor((event.pageX - canvas.offsetLeft) / (canvas.width/size)), 2);
                 var tile_y = Math.min(Math.floor((event.pageY - canvas.offsetTop) / (canvas.width/size)), 2);
-                var req = new XMLHttpRequest();
-                req.open('GET', '/make_move?id=' + match_id + '&x=' + tile_x + '&y=' + tile_y);
-                req.onreadystatechange = function() {
-                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                        if (req.response === 'success') {
-                            updateState();
+                if ((state.state === 'PLAYER_1_TURN' && state.player_num === 1) ||
+                        state.state === 'PLAYER_2_TURN' && state.player_num === 2) {
+                    var req = new XMLHttpRequest();
+                    req.open('GET', '/make_move?id=' + match_id + '&x=' + tile_x + '&y=' + tile_y);
+                    req.onreadystatechange = function() {
+                        if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+                            if (req.response === 'success') {
+                                updateState();
+                            }
                         }
                     }
+                    req.send(null);
                 }
-                req.send(null);
             }
         </script>
         <style>
