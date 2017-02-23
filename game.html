@@ -22,6 +22,16 @@
                         state = req.response;
                         document.getElementById('game_state').innerHTML = state.state;
                         draw_grid();
+                        for (x = 0; x < state.board.length; x++) {
+                            for (y = 0; y < state.board.length; y++) {
+                                if (state.board[y][x] === 'x') {
+                                    draw_x(x, y)
+                                }
+                                else if (state.board[y][x] === 'o') {
+                                    draw_o(x, y)
+                                }
+                            }
+                        }
                     }
                 }
                 req.send(null);
