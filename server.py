@@ -105,8 +105,25 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
 
     def make_move(self):
         """Change the state of a specific match."""
+        query = self.get_query()
+        query_dict = urllib.parse.parse_qs(query)
+        x_tile, y_tile = query_dict.get('x'), query_dict.get('y')
+        match_id = query_dict.get('id')
+        match = GameHandler.matches.get(match_id) if match_id else None
         self.send_response(200)
         self.end_headers()
+        if all(x_tile, y_tile, match) and (
+                match.check_valid_move(x_tile, y_tile)):
+            player_id = self.set_player_id()
+            player_num = 1 if player_id == match.player_1 else 2
+            match.board[y_tile][x_tile] = 'x' if player_num == 1 else 'o'
+            if match.check_game_over():
+                match.state = 'PLAYER_1_WIN' if player_num == 1 else 'PLAYER_2_WIN'
+            else:
+                match.state = 'PLAYER_2_TURN' if player_num == 1 else 'PLAYER_1_TURN'
+            self.wfile.write(b'success')
+        else:
+            self.wfile.write(b'failure')
 
     def match(self):
         """Send the match page as a response."""
