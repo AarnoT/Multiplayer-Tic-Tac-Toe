@@ -16,6 +16,7 @@ class GameMatch:
         self.player_1 = player_1
         self.player_2 = None
         self.board = ['*' * board_size]  * board_size
+        self.state = 'WAITING'
 
     def check_game_over(self):
         """Check if the match has ended."""
@@ -89,9 +90,14 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         query_dict = urllib.parse.parse_qs(query)
         match_id = int(query_dict.get('id', [-1])[0])
         if match_id in GameHandler.matches:
+            match = GameHandler.matches[match_id]
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(json.dumps({'board' : GameHandler.matches[match_id].board}).encode())
+            player_id = set_player_id()
+            player_num = 1 if player_id == match.player_1 else 2
+            self.wfile.write(json.dumps({'board' : match.board,
+                                         'state' : match.state,
+                                         'player_num' : player_num}).encode())
         else:
             self.send_response(303)
             self.send_header('Location', '/')
@@ -112,6 +118,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             player_id = self.set_player_id()
             if player_id != GameHandler.matches[match_id].player_1:
                 GameHandler.matches[match_id].player_2 = player_id
+                GameHandler.matches[match_id].state = 'PLAYER_1_TURN'
             self.send_response(200)
             self.end_headers()
             with open('game.html', 'r') as game_page:
