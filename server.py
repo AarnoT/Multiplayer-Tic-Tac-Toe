@@ -1,6 +1,7 @@
 """Tic-tac-toe game server."""
 
 import random
+import socketserver
 import http.server
 import http.cookies
 import urllib.parse
@@ -167,9 +168,13 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
 
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    """HTTP server with threading."""
+
+
 def run_server():
     """Handle requests in a loop."""
-    http_server = http.server.HTTPServer(('127.0.0.1', 8080), GameHandler)
+    http_server = ThreadingHTTPServer(('127.0.0.1', 8080), GameHandler)
     while True:
         http_server.handle_request()
 
