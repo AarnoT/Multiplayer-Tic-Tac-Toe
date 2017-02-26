@@ -76,7 +76,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
     Handle game requests.
 
     Class variables: matches, player_ids
-    Methods: index_page, set_player_id, get_player_id, 
+    Methods: index_page, set_player_id, get_player_id,
              create_game, game_state, wait_for_update, make_move,
              match, get_query, game_javascript, do_GET
     """
@@ -158,10 +158,10 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         match = GameHandler.matches.get(match_id)
         if match and player_id in (match.player_1, match.player_2):
             player_num = 1 if player_id == match.player_1 else 2
-            t = datetime.datetime.now()
+            start_time = datetime.datetime.now()
             while match.update_dict[player_num]:
                 time.sleep(0.5)
-                if (datetime.datetime.now() - t).seconds >= 60:
+                if (datetime.datetime.now() - start_time).seconds >= 60:
                     if match.state in ('PLAYER_2_TURN', 'WAITING'):
                         match.state = 'PLAYER_1_WIN'
                     elif match.state == 'PLAYER_1_TURN':
@@ -193,10 +193,10 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         if all((tile_x is not None, tile_y is not None, match)) and (
                 turn_player_num == player_num) and (
-                match.check_valid_move(tile_x, tile_y)):
+                    match.check_valid_move(tile_x, tile_y)):
             match.board[tile_y] = match.board[tile_y][:tile_x] + (
                 'x' if player_num == 1 else 'o') + (
-                match.board[tile_y][min(tile_x + 1, len(match.board)):])
+                    match.board[tile_y][min(tile_x + 1, len(match.board)):])
             if all(all(c != '*' for c in s) for s in match.board):
                 match.state = 'TIE'
             elif match.check_game_over():
