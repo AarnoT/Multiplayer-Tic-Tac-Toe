@@ -212,7 +212,11 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(b'failure')
 
     def match(self):
-        """Send the match page as a response."""
+        """
+        Send the match page as a response.
+
+        Set player_id cookie if not already set.
+        """
         query = self.get_query()
         query_dict = urllib.parse.parse_qs(query)
         match_id = int(query_dict.get('id', [-1])[0])
@@ -276,7 +280,7 @@ class ThreadingHTTPServer(socketserver.ThreadingMixIn,
 
 def run_server():
     """Start the game server."""
-    http_server = ThreadingHTTPServer(('192.168.0.208', 8080), GameHandler)
+    http_server = ThreadingHTTPServer(('192.168.0.8', 8080), GameHandler)
     http_server.serve_forever()
 
 if __name__ == '__main__':
