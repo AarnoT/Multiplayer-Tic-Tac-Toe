@@ -4,106 +4,16 @@
         <title>GAME</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-        <script type="text/javascript">
-            var state;
-            var match_id;
-            function getMatchID() {
-                var regex = new RegExp('\\?id=(\\d+)');
-                match_id = regex.exec(window.location.href)[1];
-                document.getElementById('header').innerHTML = 'Game ID: ' + match_id;
-            }
-            function updateState() {
-                getMatchID();
-                var req = new XMLHttpRequest();
-                req.responseType = 'json';
-                req.open('GET', '/game_state?id=' + match_id);
-                req.onreadystatechange = function() {
-                    if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                        state = req.response;
-                        document.getElementById('game_state').innerHTML = state.state;
-                        draw_grid();
-                        for (x = 0; x < state.board.length; x++) {
-                            for (y = 0; y < state.board.length; y++) {
-                                if (state.board[y][x] === 'x') {
-                                    draw_x(x, y)
-                                }
-                                else if (state.board[y][x] === 'o') {
-                                    draw_o(x, y)
-                                }
-                            }
-                        }
-                    }
-                }
-                req.send(null);
-            }
-            function draw_grid() {
-                var size = state.board.length;
-                var canvas = document.getElementById('game_canvas');
-                var context = canvas.getContext('2d');
-                context.beginPath();
-                for (x = canvas.width / size; x < canvas.width; x += canvas.width / size) {
-                    context.moveTo(x, 0);
-                    context.lineTo(x, canvas.height);
-                }
-                for (y = canvas.height / size; y < canvas.height; y += canvas.height / size) {
-                    context.moveTo(0, y);
-                    context.lineTo(canvas.width, y);
-                }
-                context.stroke();
-                context.closePath();
-            }
-            function draw_x(tile_x, tile_y) {
-                var size = state.board.length;
-                var canvas = document.getElementById('game_canvas');
-                var context = canvas.getContext('2d');
-                var tile_size = canvas.width / size;
-                context.beginPath();
-                context.moveTo(tile_size * (tile_x + 0.1), tile_size * (tile_y + 0.1));
-                context.lineTo(tile_size * (tile_x + 0.9), tile_size * (tile_y + 0.9));
-                context.moveTo(tile_size * (tile_x + 0.1), tile_size * (tile_y + 0.9));
-                context.lineTo(tile_size * (tile_x + 0.9), tile_size * (tile_y + 0.1));
-                context.stroke();
-                context.closePath();
-            }
-            function draw_o(tile_x, tile_y) {
-                var size = state.board.length;
-                var canvas = document.getElementById('game_canvas');
-                var context = canvas.getContext('2d');
-                var tile_size = canvas.width / size;
-                context.beginPath();
-                context.arc(tile_size * (tile_x + 0.5), tile_size * (tile_y + 0.5),
-                            tile_size * 0.4, 0, 2 * Math.PI, false);
-                context.stroke();
-                context.closePath();
-            }
-            function handleClick(event) {
-                var size = state.board.length;
-                var canvas = document.getElementById('game_canvas');
-                var tile_x = Math.min(Math.floor((event.pageX - canvas.offsetLeft) / (canvas.width/size)), 2);
-                var tile_y = Math.min(Math.floor((event.pageY - canvas.offsetTop) / (canvas.width/size)), 2);
-                if ((state.state === 'PLAYER_1_TURN' && state.player_num === 1) ||
-                        (state.state === 'PLAYER_2_TURN' && state.player_num === 2)) {
-                    var req = new XMLHttpRequest();
-                    req.open('GET', '/make_move?id=' + match_id + '&x=' + tile_x + '&y=' + tile_y);
-                    req.onreadystatechange = function() {
-                        if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-                            if (req.response === 'success') {
-                                updateState();
-                            }
-                        }
-                    }
-                    req.send(null);
-                }
-            }
-        </script>
+        <script src="game.js"></script>
         <style>
-            canvas {border: 1px solid black}
+            canvas {border: 1px solid black; margin: auto;}
+            body {text-align: center; font-size: 80%}
         </style>
     </head>
-    <body onload="updateState();">
+    <body onload="setCanvasSize(); setHeader(); waitForUpdate();">
         <h1 id="header"></h1><br>
-        <h2 id="game_state"></h2>
-        <canvas id="game_canvas" width="700" height="700" onclick="handleClick(event);">
+        <h2 id="game_state">WAITING</h2>
+        <canvas id="game_canvas" onclick="handleClick(event);">
             If you see this your browser doesn't support the canvas element.
         </canvas>
     </body>

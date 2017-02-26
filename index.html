@@ -4,26 +4,23 @@
         <title>GAME</title>
         <meta charset="UTF-8">
         <style>
-            form {width: 20%; margin: auto; margin-top: 15%;}
-            button {width: 10%; margin-left: 45%; margin-top: 15%;}
+            form {width: 25%; margin: auto; margin-top: 15%;}
         </style>
-        <script>
-            function createGame() {
-                window.location.assign('/create_game');
-            }
-            function joinGame() {
-                var name = document.forms['join_game']['game_name'].value;
-                window.location.assign('/match?id=' + name);
-                return false;
-            }
-        </script>
     </head>
     <body>
-        <button type="button" onclick="createGame();">Create Game</button>
-        <form onsubmit="return joinGame();" name="join_game">
-            <label for="game_name">Join game</label>
-            <input type="text" id="game_name" name="game_name">
-            <input type="submit">
+        <form action='/create_game' method='GET'>
+            <label for="size">Board Size</label>
+            <select id="size" name="size">
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <input type="submit" value="Create Game">
+        </form>
+        <form action='/match' method='GET'>
+            <label for="game_id">Game ID</label>
+            <input type="number" min="1" max="10000000" id="game_id" name="id">
+            <input type="submit" value="Join Game">
         </form>
     </body>
 </html>
