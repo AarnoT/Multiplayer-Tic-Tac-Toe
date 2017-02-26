@@ -186,7 +186,8 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         player_id = self.get_player_id()
         player_num = 0
         if match:
-            player_num = {match.player_1 : 1, match.player_2 : 2}.get(player_id, 0)
+            player_num = {match.player_1 : 1, match.player_2 : 2}.get(
+                player_id, 0)
         turn_player_num = 1 if match and match.state == 'PLAYER_1_TURN' else 2
         self.send_response(200)
         self.end_headers()
