@@ -92,6 +92,12 @@ class GameMatch:
             self.state = player_2_turn if self.state == player_1_turn else (
                 player_1_turn)
 
+    def add_player(self, player_id):
+        """Add the second player and update state."""
+        self.player_2 = player_id
+        self.state = 'PLAYER_1_TURN'
+        self.update_dict[1] = False
+
 
 class GameHandler(http.server.BaseHTTPRequestHandler):
     """
@@ -237,9 +243,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
                 self.send_response(200)
                 player_id = self.set_player_id()
                 response_sent = True
-            match.player_2 = player_id
-            match.state = 'PLAYER_1_TURN'
-            match.update_dict[1] = False
+            match.add_player(player_id)
         if match and player_id in (match.player_1, match.player_2):
             if not response_sent:
                 self.send_response(200)
