@@ -33,31 +33,29 @@ class GameMatch:
         self.state = 'WAITING'
 
     def check_game_over(self):
-        """
-        Return 'o' or 'x' if the match has ended.
-        Otherwise return False.
-        """
+        """Update state if the match has ended."""
+        if all(all(c != '*' for c in s) for s in self.board):
+            self.state = 'TIE'
         for y in range(len(self.board)):
             if all(self.board[x][y] == 'o' for x in range(len(self.board))):
-                return 'o'
+                self.state = 'PLAYER_2_TURN'
             if all(self.board[x][y] == 'x' for x in range(len(self.board))):
-                return 'x'
+                self.state = 'PLAYER_1_WIN'
         for x in range(len(self.board)):
             if all(self.board[x][y] == 'o' for y in range(len(self.board))):
-                return 'o'
+                self.state = 'PLAYER_2_TURN'
             if all(self.board[x][y] == 'x' for y in range(len(self.board))):
-                return 'x'
+                self.state = 'PLAYER_1_WIN'
         if all(self.board[n][n] == 'o' for n in range(len(self.board))):
-            return 'o'
+            self.state = 'PLAYER_2_TURN'
         if all(self.board[n][n] == 'x' for n in range(len(self.board))):
-            return 'x'
+            self.state = 'PLAYER_1_WIN'
         if all(self.board[n][len(self.board) - n - 1] == 'o'
                for n in range(len(self.board))):
-            return 'o'
+            self.state = 'PLAYER_2_TURN'
         if all(self.board[n][len(self.board) - n - 1] == 'x'
                for n in range(len(self.board))):
-            return 'x'
-        return False
+            self.state = 'PLAYER_1_WIN'
 
     def check_valid_move(self, tile_x, tile_y):
         """
@@ -201,14 +199,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             match.board[tile_y] = match.board[tile_y][:tile_x] + (
                 'x' if player_num == 1 else 'o') + (
                     match.board[tile_y][min(tile_x + 1, len(match.board)):])
-            if all(all(c != '*' for c in s) for s in match.board):
-                match.state = 'TIE'
-            elif match.check_game_over():
-                match.state = 'PLAYER_1_WIN' if player_num == 1 else (
-                    'PLAYER_2_WIN')
-            else:
-                match.state = 'PLAYER_2_TURN' if player_num == 1 else (
-                    'PLAYER_1_TURN')
+            match.check_game_over()
             self.wfile.write(b'success')
             match.update_dict[1] = False
             match.update_dict[2] = False
