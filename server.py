@@ -61,16 +61,23 @@ class GameMatch:
             self.state = 'PLAYER_1_WIN'
         return self.state in ('PLAYER_1_WIN', 'PLAYER_2_WIN', 'TIE')
 
-    def check_valid_move(self, tile_x, tile_y):
+    def check_valid_move(self, tile_x, tile_y, player_id):
         """
         Return True if a move is valid.
 
         (0, 0) is the top left corner.
         """
+        if player_id == self.player_1 and self.state == 'PLAYER_1_TURN':
+            correct_id = True
+        elif player_id == self.player_2 and self.state == 'PLAYER_2_TURN':
+            correct_id = True
+        else:
+            correct_id = False
         move_is_on_board = 0 <= tile_x < len(self.board) and (
             0 <= tile_y < len(self.board))
         spot_is_free = self.board[tile_y][tile_x] == '*'
-        return move_is_on_board and spot_is_free
+        game_over = self.check_game_over()
+        return all((correct_id, move_is_on_board, spot_is_free, not game_over))
 
     def timeout(self):
         """End the match. Should be called when the match times out."""
@@ -209,17 +216,10 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         match_id = int(query_dict.get('id', [-1])[0])
         match = GameHandler.matches.get(match_id)
         player_id = self.get_player_id()
-        player_num = 0
-        if match:
-            player_num_dict = {match.player_1 : 1, match.player_2 : 2}
-            player_num = player_num_dict.get(player_id, 0)
-        turn_player_num = 1 if match and match.state == 'PLAYER_1_TURN' else 2
         self.send_response(200)
         self.end_headers()
         if all((tile_x is not None, tile_y is not None, match,
-                turn_player_num == player_num,
-                match.check_valid_move(tile_x, tile_y),
-                not match.check_game_over())):
+                match.check_valid_move(tile_x, tile_y, player_id))):
             match.update_board(tile_x, tile_y)
             self.wfile.write(b'success')
             match.update_dict[1] = False
