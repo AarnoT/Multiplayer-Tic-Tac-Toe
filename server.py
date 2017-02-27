@@ -20,7 +20,8 @@ class GameMatch:
 
     instance variables: match_id, player_1, player_2, update_dict,
                         board, state
-    methods: __init__, check_game_over, check_valid_move, timeout
+    methods: __init__, check_game_over, check_valid_move, timeout,
+             update_board
     """
 
     def __init__(self, match_id, player_1, board_size=3):
@@ -33,7 +34,7 @@ class GameMatch:
         self.state = 'WAITING'
 
     def check_game_over(self):
-        """Update state if the match has ended."""
+        """Update state and return True if the match has ended."""
         if all(all(c != '*' for c in s) for s in self.board):
             self.state = 'TIE'
         for y in range(len(self.board)):
@@ -56,6 +57,9 @@ class GameMatch:
         if all(self.board[n][len(self.board) - n - 1] == 'x'
                for n in range(len(self.board))):
             self.state = 'PLAYER_1_WIN'
+        if self.state in ('PLAYER_1_WIN', 'PLAYER_2_TURN', 'TIE'):
+            return True
+        return False
 
     def check_valid_move(self, tile_x, tile_y):
         """
@@ -74,6 +78,19 @@ class GameMatch:
             self.state = 'PLAYER_1_WIN'
         elif self.state == 'PLAYER_1_TURN':
             self.state = 'PLAYER_2_WIN'
+
+    def update_board(self, tile_x, tile_y):
+        """
+        Update the board with the correct character. 
+        Also update the state.
+        """
+        char = 'x' if self.state == 'PLAYER_1_TURN' else 'o'
+        self.board[tile_y] = self.board[tile_y][:tile_x] + char + (
+            self.board[tile_y][min(tile_x + 1, len(self.board)):])
+        if not self.check_game_over():
+            player_2_turn, player_1_turn = 'PLAYER_2_TURN', 'PLAYER_1_TURN'
+            self.state = player_2_turn if self.state == player_1_turn else (
+                player_1_turn)
 
 
 class GameHandler(http.server.BaseHTTPRequestHandler):
@@ -188,18 +205,15 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         player_id = self.get_player_id()
         player_num = 0
         if match:
-            player_num = {match.player_1 : 1, match.player_2 : 2}.get(
-                player_id, 0)
+            player_num_dict
+            player_num = player_num_dict.get(player_id, 0)
         turn_player_num = 1 if match and match.state == 'PLAYER_1_TURN' else 2
         self.send_response(200)
         self.end_headers()
-        if all((tile_x is not None, tile_y is not None, match)) and (
-                turn_player_num == player_num) and (
-                    match.check_valid_move(tile_x, tile_y)):
-            match.board[tile_y] = match.board[tile_y][:tile_x] + (
-                'x' if player_num == 1 else 'o') + (
-                    match.board[tile_y][min(tile_x + 1, len(match.board)):])
-            match.check_game_over()
+        if all((tile_x is not None, tile_y is not None, match,
+                turn_player_num == player_num,
+                match.check_valid_move(tile_x, tile_y)):
+            match.update_board(tile_x, tile_y)
             self.wfile.write(b'success')
             match.update_dict[1] = False
             match.update_dict[2] = False
