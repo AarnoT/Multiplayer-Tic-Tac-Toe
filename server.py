@@ -21,7 +21,7 @@ class GameMatch:
     instance variables: match_id, player_1, player_2, update_dict,
                         board, state
     methods: __init__, check_game_over, check_valid_move, timeout,
-             update_board
+             update_board, add_player
     """
 
     def __init__(self, match_id, player_1, board_size=3):
@@ -35,31 +35,31 @@ class GameMatch:
 
     def check_game_over(self):
         """Update state and return True if the match has ended."""
+        if self.state in ('PLAYER_1_WIN', 'PLAYER_2_WIN', 'TIE'):
+            return True
         if all(all(c != '*' for c in s) for s in self.board):
             self.state = 'TIE'
         for y in range(len(self.board)):
             if all(self.board[x][y] == 'o' for x in range(len(self.board))):
-                self.state = 'PLAYER_2_TURN'
+                self.state = 'PLAYER_2_WIN'
             if all(self.board[x][y] == 'x' for x in range(len(self.board))):
                 self.state = 'PLAYER_1_WIN'
         for x in range(len(self.board)):
             if all(self.board[x][y] == 'o' for y in range(len(self.board))):
-                self.state = 'PLAYER_2_TURN'
+                self.state = 'PLAYER_2_WIN'
             if all(self.board[x][y] == 'x' for y in range(len(self.board))):
                 self.state = 'PLAYER_1_WIN'
         if all(self.board[n][n] == 'o' for n in range(len(self.board))):
-            self.state = 'PLAYER_2_TURN'
+            self.state = 'PLAYER_2_WIN'
         if all(self.board[n][n] == 'x' for n in range(len(self.board))):
             self.state = 'PLAYER_1_WIN'
         if all(self.board[n][len(self.board) - n - 1] == 'o'
                for n in range(len(self.board))):
-            self.state = 'PLAYER_2_TURN'
+            self.state = 'PLAYER_2_WIN'
         if all(self.board[n][len(self.board) - n - 1] == 'x'
                for n in range(len(self.board))):
             self.state = 'PLAYER_1_WIN'
-        if self.state in ('PLAYER_1_WIN', 'PLAYER_2_TURN', 'TIE'):
-            return True
-        return False
+        return self.state in ('PLAYER_1_WIN', 'PLAYER_2_WIN', 'TIE')
 
     def check_valid_move(self, tile_x, tile_y):
         """
@@ -218,7 +218,8 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         if all((tile_x is not None, tile_y is not None, match,
                 turn_player_num == player_num,
-                match.check_valid_move(tile_x, tile_y))):
+                match.check_valid_move(tile_x, tile_y),
+                not match.check_game_over())):
             match.update_board(tile_x, tile_y)
             self.wfile.write(b'success')
             match.update_dict[1] = False
