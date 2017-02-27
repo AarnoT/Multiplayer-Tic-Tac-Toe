@@ -20,7 +20,7 @@ class GameMatch:
 
     instance variables: match_id, player_1, player_2, update_dict,
                         board, state
-    methods: __init__, check_game_over, check_valid_move
+    methods: __init__, check_game_over, check_valid_move, timeout
     """
 
     def __init__(self, match_id, player_1, board_size=3):
@@ -69,6 +69,13 @@ class GameMatch:
             0 <= tile_y < len(self.board))
         spot_is_free = self.board[tile_y][tile_x] == '*'
         return move_is_on_board and spot_is_free
+
+    def timeout(self):
+        """End the match. Should be called when the match times out."""
+        if self.state in ('PLAYER_2_TURN', 'WAITING'):
+            self.state = 'PLAYER_1_WIN'
+        elif self.state == 'PLAYER_1_TURN':
+            self.state = 'PLAYER_2_WIN'
 
 
 class GameHandler(http.server.BaseHTTPRequestHandler):
@@ -162,10 +169,7 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
             while match.update_dict[player_num]:
                 time.sleep(0.5)
                 if (datetime.datetime.now() - start_time).seconds >= 60:
-                    if match.state in ('PLAYER_2_TURN', 'WAITING'):
-                        match.state = 'PLAYER_1_WIN'
-                    elif match.state == 'PLAYER_1_TURN':
-                        match.state = 'PLAYER_2_WIN'
+                    match.timeout()
                     break
             match.update_dict[player_num] = True
             self.send_response(200)
