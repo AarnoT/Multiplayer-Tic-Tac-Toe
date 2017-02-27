@@ -81,7 +81,7 @@ class GameMatch:
 
     def update_board(self, tile_x, tile_y):
         """
-        Update the board with the correct character. 
+        Update the board with the correct character.
         Also update the state.
         """
         char = 'x' if self.state == 'PLAYER_1_TURN' else 'o'
@@ -205,14 +205,14 @@ class GameHandler(http.server.BaseHTTPRequestHandler):
         player_id = self.get_player_id()
         player_num = 0
         if match:
-            player_num_dict
+            player_num_dict = {match.player_1 : 1, match.player_2 : 2}
             player_num = player_num_dict.get(player_id, 0)
         turn_player_num = 1 if match and match.state == 'PLAYER_1_TURN' else 2
         self.send_response(200)
         self.end_headers()
         if all((tile_x is not None, tile_y is not None, match,
                 turn_player_num == player_num,
-                match.check_valid_move(tile_x, tile_y)):
+                match.check_valid_move(tile_x, tile_y))):
             match.update_board(tile_x, tile_y)
             self.wfile.write(b'success')
             match.update_dict[1] = False
